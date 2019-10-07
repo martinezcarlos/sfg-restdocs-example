@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,6 +58,8 @@ class BeerControllerTest {
   void getBeerById() throws Exception {
     given(beerRepository.findById(any())).willReturn(Optional.of(Beer.builder().build()));
 
+    final ConstrainedFields fields = new ConstrainedFields(BeerDto.class);
+
     mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
         .accept(MediaType.APPLICATION_JSON)
         .param("isCold", "yes"))
@@ -69,15 +72,15 @@ class BeerControllerTest {
                 parameterWithName("isCold").description("Is beer cold query param.")
             ),
             responseFields(
-                fieldWithPath("id").description("Id of the beer."),
-                fieldWithPath("version").description("Version of the beer."),
-                fieldWithPath("createdDate").description("Creation of the entry"),
-                fieldWithPath("lastModifiedDate").description("Last modification"),
-                fieldWithPath("beerName").description("Name of the beer."),
-                fieldWithPath("beerStyle").description("Style of the beer."),
-                fieldWithPath("upc").description("UPC of the beer."),
-                fieldWithPath("price").description("Price of the beer."),
-                fieldWithPath("quantityOnHand").description("Quantity on hand.")
+                fields.withPath("id").description("Id of the beer.").type(UUID.class),
+                fields.withPath("version").description("Version of the beer.").type(Integer.class),
+                fields.withPath("createdDate").description("Creation of the entry").type(OffsetDateTime.class),
+                fields.withPath("lastModifiedDate").description("Last modification").type(OffsetDateTime.class),
+                fields.withPath("beerName").description("Name of the beer.").type(String.class),
+                fields.withPath("beerStyle").description("Style of the beer.").type(BeerStyleEnum.class),
+                fields.withPath("upc").description("UPC of the beer.").type(Long.class),
+                fields.withPath("price").description("Price of the beer.").type(BigDecimal.class),
+                fields.withPath("quantityOnHand").description("Quantity on hand.").type(Integer.class)
             )
         ));
   }
@@ -99,10 +102,10 @@ class BeerControllerTest {
                 fields.withPath("version").ignored(),
                 fields.withPath("createdDate").ignored(),
                 fields.withPath("lastModifiedDate").ignored(),
-                fields.withPath("beerName").description("Name of the beer."),
-                fields.withPath("beerStyle").description("Style of the beer."),
-                fields.withPath("upc").description("UPC of the beer."),
-                fields.withPath("price").description("Price of the beer."),
+                fields.withPath("beerName").description("Name of the beer.").type(String.class),
+                fields.withPath("beerStyle").description("Style of the beer.").type(BeerStyleEnum.class),
+                fields.withPath("upc").description("UPC of the beer.").type(Long.class),
+                fields.withPath("price").description("Price of the beer.").type(BigDecimal.class),
                 fields.withPath("quantityOnHand").ignored()
             )
         ));
