@@ -39,20 +39,17 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "dev.springframework.guru", uriPort = 80)
 @ExtendWith(RestDocumentationExtension.class)
 @WebMvcTest(BeerController.class)
 @ComponentScan(basePackages = "guru.springframework.sfgrestdocsexample.web.mappers")
 class BeerControllerTest {
 
-  @Autowired
-  MockMvc mockMvc;
+  @Autowired MockMvc mockMvc;
 
-  @Autowired
-  ObjectMapper objectMapper;
+  @Autowired ObjectMapper objectMapper;
 
-  @MockBean
-  BeerRepository beerRepository;
+  @MockBean BeerRepository beerRepository;
 
   @Test
   void getBeerById() throws Exception {
@@ -60,29 +57,47 @@ class BeerControllerTest {
 
     final ConstrainedFields fields = new ConstrainedFields(BeerDto.class);
 
-    mockMvc.perform(get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
-        .accept(MediaType.APPLICATION_JSON)
-        .param("isCold", "yes"))
+    mockMvc
+        .perform(
+            get("/api/v1/beer/{beerId}", UUID.randomUUID().toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .param("isCold", "yes"))
         .andExpect(status().isOk())
-        .andDo(document("v1/beer/find",
-            pathParameters(
-                parameterWithName("beerId").description("UUID of the desired beer to get.")
-            ),
-            requestParameters(
-                parameterWithName("isCold").description("Is beer cold query param.")
-            ),
-            responseFields(
-                fields.withPath("id").description("Id of the beer.").type(UUID.class),
-                fields.withPath("version").description("Version of the beer.").type(Integer.class),
-                fields.withPath("createdDate").description("Creation of the entry").type(OffsetDateTime.class),
-                fields.withPath("lastModifiedDate").description("Last modification").type(OffsetDateTime.class),
-                fields.withPath("beerName").description("Name of the beer.").type(String.class),
-                fields.withPath("beerStyle").description("Style of the beer.").type(BeerStyleEnum.class),
-                fields.withPath("upc").description("UPC of the beer.").type(Long.class),
-                fields.withPath("price").description("Price of the beer.").type(BigDecimal.class),
-                fields.withPath("quantityOnHand").description("Quantity on hand.").type(Integer.class)
-            )
-        ));
+        .andDo(
+            document(
+                "v1/beer/find",
+                pathParameters(
+                    parameterWithName("beerId").description("UUID of the desired beer to get.")),
+                requestParameters(
+                    parameterWithName("isCold").description("Is beer cold query param.")),
+                responseFields(
+                    fields.withPath("id").description("Id of the beer.").type(UUID.class),
+                    fields
+                        .withPath("version")
+                        .description("Version of the beer.")
+                        .type(Integer.class),
+                    fields
+                        .withPath("createdDate")
+                        .description("Creation of the entry")
+                        .type(OffsetDateTime.class),
+                    fields
+                        .withPath("lastModifiedDate")
+                        .description("Last modification")
+                        .type(OffsetDateTime.class),
+                    fields.withPath("beerName").description("Name of the beer.").type(String.class),
+                    fields
+                        .withPath("beerStyle")
+                        .description("Style of the beer.")
+                        .type(BeerStyleEnum.class),
+                    fields.withPath("upc").description("UPC of the beer.").type(Long.class),
+                    fields
+                        .withPath("price")
+                        .description("Price of the beer.")
+                        .type(BigDecimal.class),
+                    fields
+                        .withPath("quantityOnHand")
+                        .description("Quantity on hand.")
+                        .type(Integer.class))));
   }
 
   @Test
@@ -92,23 +107,28 @@ class BeerControllerTest {
 
     final ConstrainedFields fields = new ConstrainedFields(BeerDto.class);
 
-    mockMvc.perform(post("/api/v1/beer/")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(beerDtoJson))
+    mockMvc
+        .perform(post("/api/v1/beer/").contentType(MediaType.APPLICATION_JSON).content(beerDtoJson))
         .andExpect(status().isCreated())
-        .andDo(document("v1/beer/create",
-            requestFields(
-                fields.withPath("id").ignored(),
-                fields.withPath("version").ignored(),
-                fields.withPath("createdDate").ignored(),
-                fields.withPath("lastModifiedDate").ignored(),
-                fields.withPath("beerName").description("Name of the beer.").type(String.class),
-                fields.withPath("beerStyle").description("Style of the beer.").type(BeerStyleEnum.class),
-                fields.withPath("upc").description("UPC of the beer.").type(Long.class),
-                fields.withPath("price").description("Price of the beer.").type(BigDecimal.class),
-                fields.withPath("quantityOnHand").ignored()
-            )
-        ));
+        .andDo(
+            document(
+                "v1/beer/create",
+                requestFields(
+                    fields.withPath("id").ignored(),
+                    fields.withPath("version").ignored(),
+                    fields.withPath("createdDate").ignored(),
+                    fields.withPath("lastModifiedDate").ignored(),
+                    fields.withPath("beerName").description("Name of the beer.").type(String.class),
+                    fields
+                        .withPath("beerStyle")
+                        .description("Style of the beer.")
+                        .type(BeerStyleEnum.class),
+                    fields.withPath("upc").description("UPC of the beer.").type(Long.class),
+                    fields
+                        .withPath("price")
+                        .description("Price of the beer.")
+                        .type(BigDecimal.class),
+                    fields.withPath("quantityOnHand").ignored())));
   }
 
   @Test
@@ -116,9 +136,11 @@ class BeerControllerTest {
     final BeerDto beerDto = getValidBeerDto();
     final String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
-    mockMvc.perform(put("/api/v1/beer/" + UUID.randomUUID().toString())
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(beerDtoJson))
+    mockMvc
+        .perform(
+            put("/api/v1/beer/" + UUID.randomUUID().toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(beerDtoJson))
         .andExpect(status().isNoContent());
   }
 
@@ -129,7 +151,6 @@ class BeerControllerTest {
         .price(new BigDecimal("9.99"))
         .upc(123123123123L)
         .build();
-
   }
 
   private static class ConstrainedFields {
@@ -141,10 +162,12 @@ class BeerControllerTest {
     }
 
     private FieldDescriptor withPath(final String path) {
-      return fieldWithPath(path).attributes(key("constraints").value(StringUtils
-          .collectionToDelimitedString(constraintDescriptions
-              .descriptionsForProperty(path), ". ")));
+      return fieldWithPath(path)
+          .attributes(
+              key("constraints")
+                  .value(
+                      StringUtils.collectionToDelimitedString(
+                          constraintDescriptions.descriptionsForProperty(path), ". ")));
     }
   }
-
 }

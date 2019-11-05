@@ -42,11 +42,5 @@ And one showing the HTTP response:
 
 include::{snippets}/v1/beer/create/http-response.adoc[]
 
-Response Body:
-include::{snippets}/v1/beer/create/response-body.adoc[]
-
 Request Fields
 include::{snippets}/v1/beer/create/request-fields.adoc[]
-
-Response Fields:
-include::{snippets}
